@@ -72,7 +72,7 @@ pipeline {
 
                         git diff --cached --quiet || git commit -m "Updated image to ${IMAGE_TAG}"
 
-                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/Rishik-Devops/argocd-project.git main
+                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/Rishik-Devops/argocd-project.git HEAD:main
                         """
                     }
                 }
