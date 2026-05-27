@@ -6,9 +6,9 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "kastrov/multibranch-flask-app"
-        GIT_USER   = "kastrokiran"
-        GIT_EMAIL  = "learnwithkastro@gmail.com"
+        IMAGE_NAME = "rishik21/multibranch-flask-app"
+        GIT_USER   = "Rishik-Devops" 
+        GIT_EMAIL  = "trishik31720@gmail.com"
     }
 
     stages {
@@ -62,7 +62,7 @@ pipeline {
 
                         git add k8s/deployment.yml
                         git diff --cached --quiet || git commit -m "Updated image to ${IMAGE_TAG}"
-                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/KastroVKiran/Multi-Branch-Prod.git main
+                        git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/Rishik-Devops/argocd-project.git main
                         """
                     }
                 }
