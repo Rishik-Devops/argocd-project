@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "rishik21/multibranch-flask-app"
-        GIT_USER   = "Rishik-Devops" 
+        GIT_USER   = "Rishik-Devops"
         GIT_EMAIL  = "trishik31720@gmail.com"
     }
 
@@ -21,6 +21,7 @@ pipeline {
 
         stage('Build and Push Image') {
             when { branch 'main' }
+
             steps {
                 script {
                     env.IMAGE_TAG = "build-${BUILD_NUMBER}"
@@ -30,10 +31,17 @@ pipeline {
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )]) {
+
                         sh """
                         docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
                         docker push ${IMAGE_NAME}:${IMAGE_TAG}
+
+                        docker logout
+
+                        docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true
                         """
                     }
                 }
@@ -42,26 +50,28 @@ pipeline {
 
         stage('Update K8s Manifest') {
             when { branch 'main' }
+
             steps {
                 script {
+
                     withCredentials([usernamePassword(
                         credentialsId: 'github-creds',
                         usernameVariable: 'GIT_USERNAME',
                         passwordVariable: 'GIT_TOKEN'
                     )]) {
+
                         sh """
                         set -e
+
                         git config user.name "$GIT_USER"
                         git config user.email "$GIT_EMAIL"
 
-                        git fetch origin
-                        git checkout main
-                        git reset --hard origin/main
-
-                        sed -i "s|image:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/deployment.yml
+                        sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/deployment.yml
 
                         git add k8s/deployment.yml
+
                         git diff --cached --quiet || git commit -m "Updated image to ${IMAGE_TAG}"
+
                         git push https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/Rishik-Devops/argocd-project.git main
                         """
                     }
