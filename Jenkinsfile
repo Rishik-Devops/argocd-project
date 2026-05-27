@@ -66,9 +66,9 @@ pipeline {
                         git config user.name "$GIT_USER"
                         git config user.email "$GIT_EMAIL"
 
-                        sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/deployment.yml
+                        sed -i "s|image: .*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/deployment.yaml
 
-                        git add k8s/deployment.yml
+                        git add k8s/deployment.yaml
 
                         git diff --cached --quiet || git commit -m "Updated image to ${IMAGE_TAG}"
 
